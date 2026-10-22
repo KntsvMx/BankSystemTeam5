@@ -145,7 +145,7 @@ jobs:
             exit 1
           fi
 
-          if docker logs $APP_CONTAINER_NAME 2>&1 | grep -q "Started Application in"; then
+          if docker logs "$APP_CONTAINER_NAME" 2>&1 | grep -Eq "Started .*Application in"; then
             echo "Application container is running and Spring Boot has started"
             docker ps --filter "name=$APP_CONTAINER_NAME"
             exit 0
