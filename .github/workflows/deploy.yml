@@ -102,8 +102,14 @@ jobs:
 
     - name: Stop existing application (if running)
       continue-on-error: true
+      shell: bash
       run: |
-        docker rm -f $APP_CONTAINER_NAME || true
+        if docker ps -a --format '{{.Names}}' | grep -Fxq "${APP_CONTAINER_NAME}"; then
+          echo "Removing existing container ${APP_CONTAINER_NAME}"
+          docker rm -f "${APP_CONTAINER_NAME}" || true
+        else
+          echo "Container ${APP_CONTAINER_NAME} does not exist"
+        fi
         sleep 2
 
     - name: Start application container
