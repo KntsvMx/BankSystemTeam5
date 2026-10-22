@@ -26,8 +26,8 @@ jobs:
   build-and-deploy:
     runs-on: self-hosted
     env:
-      APP_CONTAINER_NAME: ${{ github.event.inputs.container_name || 'acn-bootcamp-app' }}
-      APP_IMAGE_NAME: acn-bootcamp-app
+      APP_CONTAINER_NAME: ${{ github.event.inputs.container_name || 'acn-bootcamp-app-team-5' }}
+      APP_IMAGE_NAME: acn-bootcamp-app-team-5
     
     steps:
     - name: Checkout code
