@@ -15,6 +15,10 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class CreateAccountRequest {
 
+    @NotBlank(message = "Username is required")
+    @Size(min = 2, max = 100, message = "Username must be 2-100 characters")
+    private String username;
+
     @NotBlank(message = "Owner name is required")
     @Size(min = 2, max = 100, message = "Owner name must be 2-100 characters")
     private String ownerName;
