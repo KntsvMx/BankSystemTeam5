@@ -1,11 +1,22 @@
 package org.example.banksystemteam5.controller;
 
+import jakarta.validation.Valid;
+import org.example.banksystemteam5.dto.AccountResponse;
+import org.example.banksystemteam5.dto.CreateAccountRequest;
+import org.example.banksystemteam5.dto.TransactionResponse;
+import org.example.banksystemteam5.dto.TransferRequest;
 import org.example.banksystemteam5.service.AccountService;
 import org.example.banksystemteam5.service.TransferService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController()
 public class AccountController {
@@ -20,23 +31,25 @@ public class AccountController {
         this.transferService = transferService;
     }
 
-    @RequestMapping("POST /account")
-    public AccountService createAccount() {
-        return accountService;
+    @PostMapping("/account")
+    @ResponseStatus(HttpStatus.CREATED)
+    public AccountResponse createAccount(@Valid @RequestBody CreateAccountRequest request) {
+        return accountService.createAccount(request);
     }
 
-    @RequestMapping("GET /account/{id}")
-    public AccountService getAccountById(@PathVariable("id") Long id) {
-        return accountService;
+    @GetMapping("/account/{id}")
+    public AccountResponse getAccountById(@PathVariable("id") Long id) {
+        return accountService.getAccountById(id);
     }
 
-    @RequestMapping("GET /account/{id}/transactions")
-    public TransferService getTransactions(@PathVariable("id") Long id) {
-        return transferService;
+    @GetMapping("/account/{id}/transactions")
+    public List<TransactionResponse> getTransactions(@PathVariable("id") Long id) {
+        return transferService.getTransactions(id);
     }
 
-    @RequestMapping("POST /transfer")
-    public TransferService createTransaction() {
-        return transferService;
+    @PostMapping("/transfer")
+    @ResponseStatus(HttpStatus.CREATED)
+    public List<TransactionResponse> createTransaction(@Valid @RequestBody TransferRequest request) {
+        return transferService.transfer(request);
     }
 }
