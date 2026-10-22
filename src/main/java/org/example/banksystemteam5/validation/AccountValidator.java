@@ -1,7 +1,9 @@
 package org.example.banksystemteam5.validation;
 
 import org.example.banksystemteam5.model.Account;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AccountValidator implements AccountValidation {
 
     @Override
@@ -21,7 +23,8 @@ public class AccountValidator implements AccountValidation {
         }
 
         if (account.getBalance() == null
-                || account.getBalance().signum() < 0) {
+                || account.getBalance().signum() < 0
+                || account.getBalance().scale() > 2) {
             return false;
         }
 

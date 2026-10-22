@@ -7,7 +7,6 @@ import org.example.banksystemteam5.dto.TransactionResponse;
 import org.example.banksystemteam5.dto.TransferRequest;
 import org.example.banksystemteam5.service.AccountService;
 import org.example.banksystemteam5.service.TransferService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,14 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController()
+@RestController
 public class AccountController {
 
+    private final AccountService accountService;
+    private final TransferService transferService;
 
-    private AccountService accountService;
-    private TransferService transferService;
-
-    @Autowired
     public AccountController(AccountService accountService, TransferService transferService) {
         this.accountService = accountService;
         this.transferService = transferService;
@@ -49,7 +46,7 @@ public class AccountController {
 
     @PostMapping("/transfer")
     @ResponseStatus(HttpStatus.CREATED)
-    public List<TransactionResponse> createTransaction(@Valid @RequestBody TransferRequest request) {
+    public List<TransactionResponse> transfer(@Valid @RequestBody TransferRequest request) {
         return transferService.transfer(request);
     }
 }
