@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -30,13 +29,6 @@ public class AccountRepository {
 
     public synchronized Optional<Account> findById(Long id) {
         return Optional.ofNullable(accountMap.get(id)).map(this::copyOf);
-    }
-
-    public synchronized List<Account> findAllByUserId(Long userId) {
-        return accountIdsByUserId.getOrDefault(userId, Set.of()).stream()
-                .map(accountMap::get)
-                .map(this::copyOf)
-                .toList();
     }
 
     public synchronized void transferBalance(Long fromAccountId, Long toAccountId, BigDecimal amount) {
