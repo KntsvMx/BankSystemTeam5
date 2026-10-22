@@ -8,7 +8,7 @@ on:
       container_name:
         description: 'Docker container name'
         required: false
-        default: 'acn-bootcamp-app'
+        default: 'acn-bootcamp-app-team5'
       server_port:
         description: 'Application port'
         required: false
