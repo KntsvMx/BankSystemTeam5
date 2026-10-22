@@ -1,7 +1,9 @@
 package org.example.banksystemteam5.validation;
 
 import org.example.banksystemteam5.model.Transaction;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TransactionValidator implements TransactionValidation {
 
     @Override
@@ -10,7 +12,9 @@ public class TransactionValidator implements TransactionValidation {
             return false;
         }
 
-        if (transaction.getAccount() == null) {
+        if (transaction.getAccount() == null
+                || transaction.getAccount().getId() == null
+                || transaction.getAccount().getId() <= 0) {
             return false;
         }
 
@@ -19,10 +23,12 @@ public class TransactionValidator implements TransactionValidation {
         }
 
         if (transaction.getAmount() == null
-                || transaction.getAmount().signum() <= 0) {
+                || transaction.getAmount().signum() <= 0
+                || transaction.getAmount().scale() > 2) {
             return false;
         }
 
-        return true;
+        return transaction.getCreatedAt() != null
+                && (transaction.getNote() == null || transaction.getNote().length() <= 255);
     }
 }

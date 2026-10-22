@@ -7,7 +7,8 @@ import org.example.banksystemteam5.model.Account;
 import org.example.banksystemteam5.model.Transaction;
 import org.example.banksystemteam5.model.TransactionType;
 import org.example.banksystemteam5.repository.AccountRepository;
-import org.example.banksystemteam5.repository.TransferRepository;
+import org.example.banksystemteam5.repository.TransactionRepository;
+import org.example.banksystemteam5.validation.TransactionValidation;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,18 +21,24 @@ import java.util.List;
 public class TransferService {
 
     private final AccountRepository accountRepository;
-    private final TransferRepository transferRepository;
+    private final TransactionRepository transactionRepository;
     private final Validator validator;
+    private final TransactionValidation transactionValidation;
 
-    public TransferService(AccountRepository accountRepository, TransferRepository transferRepository,
-                           Validator validator) {
+    public TransferService(AccountRepository accountRepository, TransactionRepository transactionRepository,
+                           Validator validator, TransactionValidation transactionValidation) {
         this.accountRepository = accountRepository;
-        this.transferRepository = transferRepository;
+        this.transactionRepository = transactionRepository;
         this.validator = validator;
+        this.transactionValidation = transactionValidation;
     }
 
     public List<TransactionResponse> transfer(TransferRequest request) {
-        if (request == null || !validator.validate(request).isEmpty()) {
+        if (request == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transfer request is required");
+        }
+        var violations = validator.validate(request);
+        if (!violations.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid transfer request");
         }
         if (request.getFromAccountId().equals(request.getToAccountId())) {
@@ -46,16 +53,18 @@ public class TransferService {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Insufficient funds");
             }
 
-            BigDecimal fromBalance = from.getBalance().subtract(amount);
-            BigDecimal toBalance = to.getBalance().add(amount);
             LocalDateTime createdAt = LocalDateTime.now();
             Transaction outgoing = createTransaction(from, TransactionType.TRANSFER_OUT, request, createdAt);
             Transaction incoming = createTransaction(to, TransactionType.TRANSFER_IN, request, createdAt);
 
-            List<TransactionResponse> response = transferRepository.saveTransfer(outgoing, incoming).stream()
+            if (!transactionValidation.validate(outgoing) || !transactionValidation.validate(incoming)) {
+                throw new IllegalStateException("Created transfer transactions are invalid");
+            }
+
+            List<TransactionResponse> response = transactionRepository.saveTransfer(outgoing, incoming).stream()
                     .map(this::toResponse)
                     .toList();
-            accountRepository.updateBalances(from.getId(), fromBalance, to.getId(), toBalance);
+            accountRepository.transferBalance(from.getId(), to.getId(), amount);
             return response;
         }
     }
@@ -63,7 +72,7 @@ public class TransferService {
     public List<TransactionResponse> getTransactions(Long accountId) {
         synchronized (accountRepository) {
             findAccount(accountId);
-            return transferRepository.findAllByAccountId(accountId).stream()
+            return transactionRepository.findAllByAccountId(accountId).stream()
                     .map(this::toResponse)
                     .toList();
         }

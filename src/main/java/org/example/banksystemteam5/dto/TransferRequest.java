@@ -25,7 +25,7 @@ public class TransferRequest {
 
     @NotNull(message = "Amount is required")
     @Positive(message = "Amount must be greater than 0")
-    @Digits(integer = 15, fraction = 2, message = "Amount can have max 2 decimal places")
+    @Digits(integer = 15, fraction = 2, message = "Amount must have at most 15 integer digits and 2 decimal places")
     private BigDecimal amount;
 
     @Size(max = 255, message = "Note must be max 255 characters")

@@ -1,5 +1,6 @@
 package org.example.banksystemteam5.dto;
 
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -25,5 +26,6 @@ public class CreateAccountRequest {
 
     @NotNull(message = "Initial balance is required")
     @PositiveOrZero(message = "Initial balance cannot be negative")
+    @Digits(integer = 15, fraction = 2, message = "Initial balance must have at most 15 integer digits and 2 decimal places")
     private BigDecimal initialBalance;
 }
