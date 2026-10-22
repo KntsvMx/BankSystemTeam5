@@ -7,7 +7,7 @@ import org.example.banksystemteam5.model.Account;
 import org.example.banksystemteam5.model.Transaction;
 import org.example.banksystemteam5.model.TransactionType;
 import org.example.banksystemteam5.repository.AccountRepository;
-import org.example.banksystemteam5.repository.TransactionRepository;
+import org.example.banksystemteam5.repository.TransferRepository;
 import org.example.banksystemteam5.validation.TransactionValidation;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,14 +21,14 @@ import java.util.List;
 public class TransferService {
 
     private final AccountRepository accountRepository;
-    private final TransactionRepository transactionRepository;
+    private final TransferRepository transferRepository;
     private final Validator validator;
     private final TransactionValidation transactionValidation;
 
-    public TransferService(AccountRepository accountRepository, TransactionRepository transactionRepository,
+    public TransferService(AccountRepository accountRepository, TransferRepository transferRepository,
                            Validator validator, TransactionValidation transactionValidation) {
         this.accountRepository = accountRepository;
-        this.transactionRepository = transactionRepository;
+        this.transferRepository = transferRepository;
         this.validator = validator;
         this.transactionValidation = transactionValidation;
     }
@@ -61,7 +61,7 @@ public class TransferService {
                 throw new IllegalStateException("Created transfer transactions are invalid");
             }
 
-            List<TransactionResponse> response = transactionRepository.saveTransfer(outgoing, incoming).stream()
+            List<TransactionResponse> response = transferRepository.saveTransfer(outgoing, incoming).stream()
                     .map(this::toResponse)
                     .toList();
             accountRepository.transferBalance(from.getId(), to.getId(), amount);
@@ -72,7 +72,7 @@ public class TransferService {
     public List<TransactionResponse> getTransactions(Long accountId) {
         synchronized (accountRepository) {
             findAccount(accountId);
-            return transactionRepository.findAllByAccountId(accountId).stream()
+            return transferRepository.findAllByAccountId(accountId).stream()
                     .map(this::toResponse)
                     .toList();
         }
