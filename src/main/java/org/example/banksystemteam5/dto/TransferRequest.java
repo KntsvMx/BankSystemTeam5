@@ -16,9 +16,11 @@ import java.math.BigDecimal;
 public class TransferRequest {
 
     @NotNull(message = "Sender account id is required")
+    @Positive(message = "Sender account id must be positive")
     private Long fromAccountId;
 
     @NotNull(message = "Receiver account id is required")
+    @Positive(message = "Receiver account id must be positive")
     private Long toAccountId;
 
     @NotNull(message = "Amount is required")
